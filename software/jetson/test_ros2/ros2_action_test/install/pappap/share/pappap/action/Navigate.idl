@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from pappap/action/Navigate.action
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Point.idl"
+
+module pappap {
+  module action {
+    @verbatim (language="comment", text=
+      "goal")
+    struct Navigate_Goal {
+      geometry_msgs::msg::Point target;
+    };
+    @verbatim (language="comment", text=
+      "result")
+    struct Navigate_Result {
+      float used_time;
+    };
+    @verbatim (language="comment", text=
+      "feedback")
+    struct Navigate_Feedback {
+      float distance_to_target;
+    };
+  };
+};

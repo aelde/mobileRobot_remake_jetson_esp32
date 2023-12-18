@@ -1,0 +1,8 @@
+{
+  "package_name": "pappap",
+  "non_idl_tuples": [
+    "/home/eggs/ros2/ros2_action_test/src/pappap:srv/SpeedControl.srv",
+    "/home/eggs/ros2/ros2_action_test/src/pappap:action/Test.action",
+    "/home/eggs/ros2/ros2_action_test/src/pappap:action/Navigate.action"
+  ]
+}

@@ -1,0 +1,4 @@
+source;share/pappap/local_setup.bash
+source;share/pappap/local_setup.dsv
+source;share/pappap/local_setup.sh
+source;share/pappap/local_setup.zsh

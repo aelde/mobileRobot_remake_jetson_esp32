@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/eggs/ros2_aa/install/pacpac/local/lib/python3.10/dist-packages",
+        "/home/eggs/ros2_concept/install/my_pac/lib/python3.10/site-packages",
+        "/home/eggs/ros2_new/install/mypkg/lib/python3.10/site-packages",
+        "/home/eggs/ros2_ws/install/udemy_ros2_pkg/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/eggs/ros2_aa/install/pacpac/local/lib/python3.10/dist-packages",
+        "/home/eggs/ros2_concept/install/my_pac/lib/python3.10/site-packages",
+        "/home/eggs/ros2_new/install/mypkg/lib/python3.10/site-packages",
+        "/home/eggs/ros2_ws/install/udemy_ros2_pkg/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}

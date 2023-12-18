@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from pappap/srv/SpeedControl.srv
+// generated code does not contain a copyright notice
+
+
+module pappap {
+  module srv {
+    struct SpeedControl_Request {
+      float spd;
+    };
+    struct SpeedControl_Response {
+      string feedback;
+    };
+  };
+};
