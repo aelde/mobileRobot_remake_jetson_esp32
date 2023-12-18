@@ -32,3 +32,5 @@ you can see code in /software/jetson/test_ros2/
 
 # assembly
 <img width="656" alt="9_12_2023_esp32_duo30_encoder_ultrasonic" src="https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/56ddf5d5-e786-4f22-8d9e-3e63d2c566e5">
+
+(มีอัพเดทโค้ดเรื่อยๆนะครับ)
