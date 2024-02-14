@@ -10,6 +10,9 @@
 // define for wheel encoder sensor
 #define FLA 34
 #define FLB 35
+// #define FLA 35
+// #define FLB 34
+
 #define FRA 32
 #define FRB 33
 #define RLA 25
@@ -116,8 +119,8 @@ void Straightahead()//วิ่งตรง
 
 void setup() {
 
-  pinMode(FLA,INPUT);
-  pinMode(FLB,INPUT);
+  pinMode(FLA,INPUT_PULLDOWN);
+  pinMode(FLB,INPUT_PULLDOWN);
   pinMode(FRA,INPUT);
   pinMode(FRB,INPUT);
   pinMode(RLA,INPUT);

@@ -116,22 +116,22 @@ void Straightahead()//วิ่งตรง
 
 void setup() {
 
-  pinMode(FLA,INPUT);
-  pinMode(FLB,INPUT);
-  pinMode(FRA,INPUT);
-  pinMode(FRB,INPUT);
-  pinMode(RLA,INPUT);
-  pinMode(RLB,INPUT);
-  pinMode(RRA,INPUT);
-  pinMode(RRB,INPUT);
-  pinMode(UF,INPUT);
-  pinMode(UB,INPUT);
-  pinMode(UL,INPUT);
-  pinMode(UR,INPUT);
+  pinMode(FLA,INPUT_PULLDOWN);
+  pinMode(FLB,INPUT_PULLDOWN);
+  pinMode(FRA,INPUT_PULLDOWN);
+  pinMode(FRB,INPUT_PULLDOWN);
+  pinMode(RLA,INPUT_PULLDOWN);
+  pinMode(RLB,INPUT_PULLDOWN);
+  pinMode(RRA,INPUT_PULLDOWN);
+  pinMode(RRB,INPUT_PULLDOWN);
+  pinMode(UF,INPUT_PULLDOWN);
+  // pinMode(UB,INPUT_PULLDOWN);
+  // pinMode(UL,INPUT_PULLDOWN);
+  // pinMode(UR,INPUT_PULLDOWN);
   
-  pinMode(TXR,OUTPUT);
-  pinMode(TXF,OUTPUT);
-  pinMode(UE,OUTPUT);
+  // pinMode(TXR,OUTPUT);
+  // pinMode(TXF,OUTPUT);
+  // pinMode(UE,OUTPUT);
   
 
   attachInterrupt(FLA,decoder_fl,RISING);
@@ -209,15 +209,15 @@ Serial.print("], Rear Right:[");
 Serial.print(cRR);
 Serial.print("][");
 Serial.print(dRR);
-Serial.print("]");
-Serial.print(", F: ");
-Serial.print(Front);
-Serial.print(", B: ");
-Serial.print(Back);
-Serial.print(", L: ");
-Serial.print(Left);
-Serial.print(", R:");
-Serial.println(Right);
+// Serial.print("]");
+// Serial.print(", F: ");
+// Serial.print(Front);
+// Serial.print(", B: ");
+// Serial.print(Back);
+// Serial.print(", L: ");
+// Serial.print(Left);
+// Serial.print(", R:");
+// Serial.println(Right);
 
 delay(5);
 
