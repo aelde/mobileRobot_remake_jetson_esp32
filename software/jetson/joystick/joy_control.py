@@ -42,47 +42,48 @@ def getJS(name=''):
 
 def spd_counter(buttons):
     global spd_count
-    if ARM_MODE: return spd_count
-    if buttons['1'] == 1: spd_count += 1
-    if buttons['3'] == 1: spd_count -= 1
-    if spd_count < 0: spd_count = 0
-    if spd_count > 62: spd_count = 62
+    if not ARM_MODE: 
+        if buttons['1'] == 1: spd_count += 1
+        if buttons['3'] == 1: spd_count -= 1
+        if spd_count < 0: spd_count = 0
+        if spd_count > 62: spd_count = 62
     return spd_count
 def direction_move(buttons):
-    result = 'no direction movement'
-    if buttons['ax1'] == 0 and buttons['ax2'] == 0:
-        # print('stop')
-        result = 'stop'
-    elif buttons['ax2'] == -1 and buttons['ax1'] == 0:
-        # print('go forward')
-        result = 'go forward'
-    elif buttons['ax2'] == 1 and buttons['ax1'] == 0:
-        # print('go backward')
-        result = 'go backward'
-    elif buttons['ax1'] == -1 and buttons['ax2'] == 0:
-        # print('go left')
-        result = 'go left'
-    elif buttons['ax1'] == 1 and buttons['ax2'] == 0:
-        # print('go right')
-        result = 'go right'
-    elif buttons['ax2'] == -1 and buttons['ax1'] == -1:
-        # print('go forward left')
-        result = 'go forward left'
-    elif buttons['ax2'] == -1 and buttons['ax1'] == 1:
-        # print('go forward right')
-        result = 'go forward right'
-    elif buttons['ax2'] == 1 and buttons['ax1'] == -1:
-        # print('go backward left')
-        result = 'go backward left'
-    elif buttons['ax2'] == 1 and buttons['ax1'] == 1:
-        # print('go backward right')
-        result = 'go backward right'
-    elif buttons['ax3'] == -1 and buttons['ax4'] == 0:
-        # print('turn left')
-        result = 'turn left'
-    elif buttons['ax2'] == 1 and buttons['ax1'] == 0:
-        # print('turn right')
-        result = 'turn right'
+    result = 'arm mode on!'
+    if not ARM_MODE:
+        if buttons['ax1'] == 0 and buttons['ax2'] == 0 and buttons['ax3'] == 0 and buttons['ax4'] == 0:
+            # print('stop')
+            result = 'stop'
+        elif buttons['ax2'] == -1 and buttons['ax1'] == 0:
+            # print('go forward')
+            result = 'go forward'
+        elif buttons['ax2'] == 1 and buttons['ax1'] == 0:
+            # print('go backward')
+            result = 'go backward'
+        elif buttons['ax1'] == -1 and buttons['ax2'] == 0:
+            # print('go left')
+            result = 'go left'
+        elif buttons['ax1'] == 1 and buttons['ax2'] == 0:
+            # print('go right')
+            result = 'go right'
+        elif buttons['ax2'] == -1 and buttons['ax1'] == -1:
+            # print('go forward left')
+            result = 'go forward left'
+        elif buttons['ax2'] == -1 and buttons['ax1'] == 1:
+            # print('go forward right')
+            result = 'go forward right'
+        elif buttons['ax2'] == 1 and buttons['ax1'] == -1:
+            # print('go backward left')
+            result = 'go backward left'
+        elif buttons['ax2'] == 1 and buttons['ax1'] == 1:
+            # print('go backward right')
+            result = 'go backward right'
+        elif buttons['ax3'] == -1 and buttons['ax4'] == 0:
+            # print('turn left')
+            result = 'turn left'
+        elif buttons['ax3'] == 1 and buttons['ax4'] == 0:
+            # print('turn right')
+            result = 'turn right'
     return result
 def arm_mode_check(buttons):
     global ARM_MODE
@@ -140,10 +141,9 @@ def main():
     arm_mode_check(getJS())
     print(f'car speed : {spd_count}')
     print(f'car movement : {direction_move(getJS())}')
-    # arm_move(getJS())
     print(f'arm mode : {ARM_MODE}')
     print(f'arm movement : {arm_move(getJS())}')
-    # print(arm_move(getJS()))
+    
     sleep(0.05)
  
 if __name__ == '__main__':
