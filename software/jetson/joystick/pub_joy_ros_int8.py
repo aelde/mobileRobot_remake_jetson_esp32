@@ -73,6 +73,10 @@ class JoystickControlPubNode(Node):
             if self.buttons['1'] == 1: self.spd += 1
             if self.buttons['3'] == 1: self.spd -= 1
         return self.spd
+    
+    # mode   [stop a, stop, for, back, left, right, for left, for right, bac left, bac right, t left, l right]
+    # nuber  [-1    , 0   , 1  , 2   , 3   , 4    , 5       , 6        , 7       , 8        , 9     , 10]
+    
     def direction_move(self):
         result = 'stop arm mode on!'
         r = -1
