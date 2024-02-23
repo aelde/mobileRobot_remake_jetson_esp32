@@ -42,23 +42,23 @@ void loop()
   {
   case 0:
   myservo.write(0); // สั่งให้ Servo หมุนไปองศาที่ 0
-  Serial.println('0');
+  Serial.println("0");
     // do something for var 0
     break;
   case 1:
   myservo.write(40); // สั่งให้ Servo หมุนไปองศาที่ 0
-  Serial.println('90');
+  Serial.println("40");
     // do something for var 1
     break;
   case 2:
   myservo.write(60); // สั่งให้ Servo หมุนไปองศาที่ 0
-  Serial.println('180');
+  Serial.println("60");
 
     // do something for var 2
     break;
   case 3:
   myservo.write(45); // สั่งให้ Servo หมุนไปองศาที่ 0
-  Serial.println('90');
+  Serial.println("45");
 
     // do something for var 3
     break;
