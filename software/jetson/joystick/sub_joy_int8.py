@@ -33,9 +33,14 @@ class TestMotorControl(Node):
         for i,j in enumerate(msg.data):
             if i == 0 : 
                 self.spd = j
-                print(f'spd : {self.spd}')
-            if i == 1 : print(f'car : {self.car_direction_control(j)}')
-            if i == 2 : print(f'arm : {self.arm_direction_control(j)}')
+                # print(f'spd : {self.spd}')
+                self.get_logger().info(f'spd : {self.spd}')
+            if i == 1 : 
+                # print(f'car : {self.car_direction_control(j)}')
+                self.get_logger().info(f'car : {self.car_direction_control(j)}')
+            if i == 2 : 
+                # print(f'arm : {self.arm_direction_control(j)}')
+                self.get_logger().info(f'arm : {self.arm_direction_control(j)}')
 # mode   [stop a, stop, for, back, left, right, for left, for right, bac left, bac right, t left, l right]
 # nuber  [-1    , 0   , 1  , 2   , 3   , 4    , 5       , 6        , 7       , 8        , 9     , 10]
     def car_direction_control(self, cmd):
@@ -101,21 +106,11 @@ class TestMotorControl(Node):
         self.F_R = 192 + self.spd
         self.B_L = 64 + self.spd
         self.B_R = 192 + self.spd
-    def turn_right(self):
-        self.F_L = 0 + self.spd
-        self.F_R = 192 + self.spd
-        self.B_L = 0 + self.spd
-        self.B_R = 192 + self.spd
-    def turn_left(self):
-        self.F_L = 64 + self.spd
-        self.F_R = 128 + self.spd
-        self.B_L = 64 + self.spd
-        self.B_R = 128 + self.spd
     def go_right(self):
         self.F_L = 0 + self.spd
-        self.F_R = 128 + self.spd
+        self.F_R = 192 + self.spd
         self.B_L = 64 + self.spd
-        self.B_R = 192 + self.spd
+        self.B_R = 128 + self.spd
     def go_left(self):
         self.F_L = 64 + self.spd
         self.F_R = 128 + self.spd
@@ -141,7 +136,18 @@ class TestMotorControl(Node):
         self.F_R = 192 + self.spd
         self.B_L = 64 + self.spd
         self.B_R = 128
+    def turn_right(self):
+        self.F_L = 0 + self.spd
+        self.F_R = 192 + self.spd
+        self.B_L = 0 + self.spd
+        self.B_R = 192 + self.spd
+    def turn_left(self):
+        self.F_L = 64 + self.spd
+        self.F_R = 128 + self.spd
+        self.B_L = 64 + self.spd
+        self.B_R = 128 + self.spd
     def control(self):
+        print(f'F_L : {self.F_L}, F_R : {self.F_R}, B_L : {self.B_L}, B_R : {self.B_R}')
         packetFL = bytearray()
         packetFR = bytearray()
         packetBL = bytearray()
