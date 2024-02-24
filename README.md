@@ -10,6 +10,9 @@ today im starting with my new robot project (next gen of kalwtummad2). but these
 - Encoder 330 ppr
 - RPLiDAR S1
 - esp32
+- mg995
+- mg90s
+- pca9685
 
 # assembly sketch concept
 ![056852A4-D0E9-4DB3-A7C6-FE18A40E03E4](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/991a1e32-5fe2-4609-bab0-d730bcc78ff6)
