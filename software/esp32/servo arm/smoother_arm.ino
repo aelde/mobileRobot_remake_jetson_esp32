@@ -6,7 +6,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 
 int servoNumber = 0;
 int switch1;
-float switch1Smoothed , switch1Prev , a , a6, a5,a4,a3;
+float switch1Smoothed , switch1Prev , a , a6, a5,a4,a3,a2,a1;
 
 void setup() {
 
@@ -30,7 +30,9 @@ void loop() {
   a6 = map(switch1Smoothed,1,100,30,90); // servo arm 6
   a5 = map(switch1Smoothed,1,100,20,50); // servo arm 5
   a4 = map(switch1Smoothed,1,100,70,95); // servo arm 4
-  a3 = map(switch1Smoothed,1,100,136,138); // servo arm 3
+  a3 = map(switch1Smoothed,1,100,179,180); // servo arm 3 -still wrong direction
+  a2 = map(switch1Smoothed,1,100,60,15); // servo arm 2 -still wrong direction 
+  a1 = map(switch1Smoothed,1,100,110,180); // servo arm 1
 
   // Serial.println(switch1Smoothed);
   // Serial.println(switch1Prev);
@@ -44,7 +46,9 @@ void loop() {
   board1.setPWM(12, 0, angleToPulse(a6, 6)); // arm 6
   board1.setPWM(4, 0, angleToPulse(a5, 5)); // arm 5
   board1.setPWM(8, 0, angleToPulse(a4, 4)); // arm 4
-  board1.setPWM(0, 0, angleToPulse(a3, 3)); // arm 3
+  board1.setPWM(2, 0, angleToPulse(a3, 3)); // arm 3
+  board1.setPWM(0, 0, angleToPulse(a2, 2)); // arm 2
+  board1.setPWM(15, 0, angleToPulse(a1, 1)); // arm 1
 
   delay(20);                      // run loop 100 times/second
 
