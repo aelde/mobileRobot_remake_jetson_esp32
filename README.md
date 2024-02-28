@@ -1,6 +1,7 @@
 โปรเจคนี้เป็นโปรเจคที่ผมตั้งใจทำขึ้นมาหลังจากที่ผมได้ดูหนังหุ่นยนต์และเห็นบริษัทที่ทำหุ่นยนต์เจ๋งๆ เช่น รีลสตีล,Cyberpunk:Edgerunners,guardians of the galaxy,Boston dinamic, tesla, nasa และอีกหลายๆเรื่องและหลายๆบริษัท ผมจึงอยากสร้างหุ่นยนต์ของตัวเองดูครับ\
 today im starting with my new robot project (next gen of kalwtummad2). but these code is just a small path of this project (updating the code continuously)\
 3d : <https://collaborate.shapr3d.com/v/ItvfXJBg52ye7wI7pF4OV>
+arm 3d: <https://collaborate.shapr3d.com/v/P_J-J_7XLpJSV6bIwB8kV>
 
 # Components in this projec
 - Jetson nano developer kit
