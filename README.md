@@ -15,7 +15,7 @@ today im starting with my new robot project (next gen of kalwtummad2). but these
 - pca9685
 
 # assembly sketch concept
-![056852A4-D0E9-4DB3-A7C6-FE18A40E03E4](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/991a1e32-5fe2-4609-bab0-d730bcc78ff6)
+![alt text](model/schematic/Schematic_mobile-robot-full.jpg)
 
 # controlling smartdriveduo30 motor driver
 this represent how to control smartdrive duo 30 using ros2 on jetson nano.
