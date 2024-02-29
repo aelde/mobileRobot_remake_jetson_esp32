@@ -90,7 +90,7 @@ class TestMotorControl(Node):
         return result
         
     # mode   [stop a, stop, for, back, left, right, for left, for right, bac left, bac right, t left, l right]
-    # nuber  [-1    , 0   , 1  , 2   , 3   , 4    , 5       , 6        , 7       , 8        , 9     , 10]
+    # nuber  [-1    , 0   , 1  , 2   , 3   , 4    , 5      , 6        , 7       , 8        , 9     , 10]
     def stop(self): 
         self.F_L = 64
         self.F_R = 128
