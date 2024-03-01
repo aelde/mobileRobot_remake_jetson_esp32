@@ -27,7 +27,7 @@ void loop() {
 
   switch1Smoothed = (switch1 * 0.05) + (switch1Prev * 0.95);
   switch1Prev = switch1Smoothed;
-  a6 = map(switch1Smoothed,1,100,30,90); // servo arm 6
+  a6 = map(switch1Smoothed,1,100,30,90); // servo arm 6 
   a5 = map(switch1Smoothed,1,100,20,50); // servo arm 5
   a4 = map(switch1Smoothed,1,100,70,95); // servo arm 4
   a3 = map(switch1Smoothed,1,100,179,180); // servo arm 3 -still wrong direction
