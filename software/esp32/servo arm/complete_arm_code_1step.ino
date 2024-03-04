@@ -10,8 +10,12 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 #define SERVOMAX  575
 
 const int LED_PIN = 2;  
-int L1 = 100, L2 = 100, R1 = 100, R2 = 100;
 int a6 = 0,a5 = 0,a4 = 0,a3 = 0,a2 = 0,a1 = 0;
+int a6_max = 120, a6_min = 10;
+int a5_max = 50, a5_min = 10;
+int a4_max = 85, a4_min = 60;
+int a1_max = 180, a1_min = 110;
+int L1 = a6_max, L2 = a5_max, R1 = a4_max, R2 = a1_max;
 
 void setup() {
   Serial.begin(115200);
@@ -35,21 +39,21 @@ void loop() {
     }
 
     // Access individual values from the received JSON
-    if (L1 >= 1 && L1 <= 100) {
+    if (L1 >= a6_min && L1 <= a6_max) { // a6
       int l11 = doc["L1"];
-      L1 = constrain(L1 - l11, 1, 100);
+      L1 = constrain(L1 - l11, a6_min, a6_max);
     }
-    if (L2 >= 1 && L2 <= 100) {
+    if (L2 >= a5_min && L2 <= a5_max) { // a5
       int l22 = doc["L2"];
-      L2 = constrain(L2 - l22, 1, 100);
+      L2 = constrain(L2 - l22, a5_min, a5_max);
     }
-    if (R1 >= 1 && R1 <= 100) {
+    if (R1 >= a4_min && R1 <= a4_max) {
       int r11 = doc["R1"];
-      R1 = constrain(R1 - r11, 1, 100);
+      R1 = constrain(R1 - r11, a4_min, a4_max);
     }
-    if (R2 >= 1 && R2 <= 100) {
+    if (R2 >= a1_min && R2 <= a1_max) {
       int r22 = doc["R2"];
-      R2 = constrain(R2 - r22, 1, 100);
+      R2 = constrain(R2 - r22, a1_min, a1_max);
     }
 
     // Prepare response JSON
@@ -58,10 +62,10 @@ void loop() {
     // responseDoc["L2"] = L2;
     // responseDoc["R1"] = R1;
     // responseDoc["R2"] = R2;
-    responseDoc["a6"] = a6; // Echo back the received values
-    responseDoc["a5"] = a5;
-    responseDoc["a4"] = a4;
-    responseDoc["a1"] = a1;
+    responseDoc["a6"] = L1; // Echo back the received values
+    responseDoc["a5"] = L2;
+    responseDoc["a4"] = R1;
+    responseDoc["a1"] = R2;
 
     // Serialize the JSON response
     String jsonResponse;
@@ -72,19 +76,19 @@ void loop() {
     
   }
 
-  a6 = map(L1, 1, 100, 20, 120); // 120 - 20
-  a5 = map(L2, 1, 100, 10, 50); // 
-  a4 = map(R1, 1, 100, 60, 85);
+  // a6 = map(L1, 1, 100, a6_min, a6_max); // 120 - 20
+  // a5 = map(L2, 1, 100, a5_min, a5_max); // 
+  // a4 = map(R1, 1, 100, a4_min, a4_max);
   // a3 = map(switch1Smoothed,1,100,179,180); // servo arm 3 -still wrong direction
   // a2 = map(switch1Smoothed,1,100,60,15); // servo arm 2 -still wrong direction 
-  a1 = map(R2, 1, 100, 110, 180);
+  // a1 = map(R2, 1, 100, a1_min, a1_max);
 
-  board1.setPWM(12, 0, angleToPulse(a6, 6));
-  board1.setPWM(4, 0, angleToPulse(a5, 5)); // arm 5
-  board1.setPWM(8, 0, angleToPulse(a4, 4)); // arm 4 // servo heating while moving
+  board1.setPWM(12, 0, angleToPulse(L1, 6));
+  board1.setPWM(4, 0, angleToPulse(L2, 5)); // arm 5
+  board1.setPWM(8, 0, angleToPulse(R1, 4)); // arm 4 // servo heating while moving
   // board1.setPWM(2, 0, angleToPulse(a3, 3)); // arm 3 // servo need to change
   // board1.setPWM(0, 0, angleToPulse(a2, 2)); // arm 2 // servo heating while moving
-  board1.setPWM(15, 0, angleToPulse(a1, 1)); // arm 1
+  board1.setPWM(15, 0, angleToPulse(R2, 1)); // arm 1
 
   delay(20);
 }
