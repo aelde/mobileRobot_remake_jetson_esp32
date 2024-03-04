@@ -1,12 +1,8 @@
 #!/usr/bin/env python3 
+import json
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int8MultiArray
-
-# c = 00000000 - 00111111 # bitที่ 7-8::00 , 0 - 63 ล้อซ้าย ไปข้่างหน้า
-# c = 01000000 - 01111111 # bitที่ 7-8::01 , 64 - 127 ล้อซ้าย ไปข้างหลัง
-# c = 10000000 - 10111111 # bitที่ 7-8::10 , 128 - 191 ล้อขวา ไปข้างหน้า
-# c = 11000000 - 11111111 # bitที่ 7-8::11 , 192 - 255 ล้อขวา ไปข้างหลัง
 
 import serial
 import time
@@ -15,8 +11,7 @@ po = serial.tools.list_ports.comports()
 for port in po:    
     print(port.device)
 
-# serial_port = serial.Serial('/dev/cu.usbserial-2110', 115200, timeout=1)
-
+serial_port = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
 class TestMotorControl(Node):
     def __init__(self):
@@ -26,11 +21,13 @@ class TestMotorControl(Node):
         # param set
         self.arm_cmd = 'no arm move'
         self.arm_speed = 0
+        self.json_messages = [
+            {"L1": 0, "L2": 0, "R1": 0, "R2": 0}
+        ]
+
     def update_control(self, msg):
         for i,j in enumerate(msg.data):
             if i == 2 : 
-                # print(f'arm : {self.arm_direction_control(j)}')
-                # self.get_logger().info(f'arm : {self.arm_direction_control(j)}')
                 self.arm_direction_control(j)
     def arm_direction_control(self, cmd):
         # result = 'no arm move'
@@ -41,11 +38,6 @@ class TestMotorControl(Node):
                 self.arm_speed = 1
             elif direc[cmd%4] == 'down' :
                 self.arm_speed = -1
-            # elif direc[cmd%4] == 'right' :
-            #     self.arm_speed = 3
-            # elif direc[cmd%4] == 'left' :
-            #     self.arm_speed = 4
-            # print(f'{arms[cmd//4]} {direc[cmd%4]} speed:{self.arm_speed}')
             self.arm_cmd = f'{arms[cmd//4]}'       
         else: 
             self.arm_speed = 0
@@ -57,11 +49,38 @@ class TestMotorControl(Node):
         L2 = self.arm_speed if self.arm_cmd == 'L2' else 0
         R1 = self.arm_speed if self.arm_cmd == 'R1' else 0
         R2 = self.arm_speed if self.arm_cmd == 'R2' else 0
-        data = f'"L1":{L1},"L2":{L2},"R1":{R1},"R2":{R2} / sp:{self.arm_speed} / cmd:{self.arm_cmd}'
-        # data_bytes = data.encode('utf-8')
-        # serial_port.write(data_bytes)
-        # print(f"Sent: {self.arm_cmd} // {data}")
-        print(f"{data}")
+
+        print(self.json_messages)
+        self.json_messages = [
+            {"L1": L1, "L2": L2, "R1": R1, "R2": R2}
+        ]
+        self.json_send(self.json_messages)
+        
+    def json_send(self,json_messages):
+        for json_message in json_messages:
+        # Send JSON message and receive response
+            response = self.send_json_and_receive_response(json_message)
+        if response:
+            print("Received response:")
+            print(json.dumps(response, indent=2))
+        else:
+            print("No valid response received")
+            
+    def send_json_and_receive_response(self,json_data):
+        # Send JSON data to ESP32
+        formatted_json = json.dumps(json_data)
+        serial_port.write((formatted_json + '\n').encode('utf-8'))
+
+        # Read response from ESP32
+        response = serial_port.readline().decode('utf-8').strip()
+
+        try:
+            # Parse the received JSON response
+            response_data = json.loads(response)
+            return response_data
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON response: {e}")
+            return None
 
 def main(args=None):
     rclpy.init()
@@ -71,7 +90,7 @@ def main(args=None):
         rclpy.spin(server)
     except KeyboardInterrupt:
         print(f'driver service server terminated!')
-        # serial_port.close()
+        serial_port.close()
         server.destroy_node()
 
 if __name__ == '__main__':
