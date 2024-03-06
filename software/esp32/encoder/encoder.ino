@@ -1,227 +1,98 @@
-#include <SoftwareSerial.h>
-//#include <NewPing.h>
-// Incremental Encoder Spec  330 ppr
-// define for motor driver connection via SoftwareSerial.h
-#define TXF 23
-#define TXR 13
-#define RXF 15
-#define RXR 15
+#include <Wire.h>
+#include <ArduinoJson.h>
+#include <Adafruit_PWMServoDriver.h>
 
-// define for wheel encoder sensor
-#define FLA 34
-#define FLB 35
-// #define FLA 35
-// #define FLB 34
+DynamicJsonDocument doc(1024);
+DynamicJsonDocument responseDoc(1024);
 
-#define FRA 32
-#define FRB 33
-#define RLA 25
-#define RLB 26
-#define RRA 27
-#define RRB 14
+Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
+#define SERVOMIN  125
+#define SERVOMAX  575
 
-//define for ultrasonic sensor
-#define UE  4
-#define UR  2
-#define UL  19 
-#define UB  5
-#define UF  18
-
-//define for IMU
-#define SDA_PIN 21
-#define SCL_PIN 22
-
-#define MAX_DISTANCE 250 
-#define SOUND_SPEED 0.034
-
-
-
-SoftwareSerial MDDS60Serial(RXF, TXF);
-SoftwareSerial MDDS60Serial1(RXR, TXR);
-
-
-long durationF,durationB,durationR,durationL;
-hw_timer_t * timer = NULL;
-                  // Front Left   
-volatile int cFL=0; // Current counter 
-volatile int lFL=0; // Last counter 
-volatile int dFL=0; // displacement counter 
-                  // Front Right
-volatile int cFR=0; // Current counter 
-volatile int lFR=0; // Last counter
-volatile int dFR=0; // displacement counter 
-                  // Rear Left
-volatile int cRL=0; // Current counter 
-volatile int lRL=0;// Last counter
-volatile int dRL=0; // displacement counter 
-                  // Rear Right
-volatile int cRR=0; // Current counter 
-volatile int lRR=0;// Last counter
-volatile int dRR=0; // displacement counter 
-int Front = 0;
-int Back = 0;
-int Left = 0;
-int Right = 0;
-
-
-void IRAM_ATTR onTimer(){ 
-  dFL=(cFL-lFL)*10;
-  lFL=cFL;
-  dFR=(cFR-lFR)*10;
-  lFR=cFR;
-  dRL=(cRL-lRL)*10;
-  lRL=cRL;
-  dRR=(cRR-lRR)*10;
-  lRR=cRR;
-}
-
-void IRAM_ATTR decoder_fl(){
-  if(digitalRead(FLA) == digitalRead(FLB)) {
-    cFL++; 
-  } else {
-    cFL--; 
-  }
-}
-void IRAM_ATTR decoder_fr(){
-  if(digitalRead(FRA) == digitalRead(FRB)) {
-    cFR--; 
-  } else {
-    cFR++; 
-  }
-}
-
-void IRAM_ATTR decoder_rl(){
-  if(digitalRead(RLA) == digitalRead(RLB)) {
-    cRL++; 
-  } else {
-    cRL--; 
-  }
-}
-void IRAM_ATTR decoder_rr(){
-  if(digitalRead(RRA) == digitalRead(RRB)) {
-    cRR--; 
-  } else {
-    cRR++; 
-  }
-}
-
-void Straightahead()//วิ่งตรง
-{ 
-
-  MDDS60Serial.write(62-1);
-  MDDS60Serial.write(191-2);
-  MDDS60Serial1.write(59);
-  MDDS60Serial1.write(191-2);
-
-}
-
-
+const int LED_PIN = 2;  
+int a6 = 0,a5 = 0,a4 = 0,a3 = 0,a2 = 0,a1 = 0;
+int a6_max = 120, a6_min = 10;
+int a5_max = 50, a5_min = 10;
+int a4_max = 85, a4_min = 60;
+int a1_max = 180, a1_min = 110;
+int L1 = a6_max, L2 = a5_max, R1 = a4_max, R2 = a1_max;
+int Step = 3;
 
 void setup() {
-
-  pinMode(FLA,INPUT_PULLDOWN);
-  pinMode(FLB,INPUT_PULLDOWN);
-  pinMode(FRA,INPUT);
-  pinMode(FRB,INPUT);
-  pinMode(RLA,INPUT);
-  pinMode(RLB,INPUT);
-  pinMode(RRA,INPUT);
-  pinMode(RRB,INPUT);
-  pinMode(UF,INPUT);
-  pinMode(UB,INPUT);
-  pinMode(UL,INPUT);
-  pinMode(UR,INPUT);
-  
-  pinMode(TXR,OUTPUT);
-  pinMode(TXF,OUTPUT);
-  pinMode(UE,OUTPUT);
-  
-
-  attachInterrupt(FLA,decoder_fl,RISING);
-  attachInterrupt(FRA,decoder_fr,RISING);
-  attachInterrupt(RLA,decoder_rl,RISING);
-  attachInterrupt(RRA,decoder_rr,RISING);
-
-
-  timer = timerBegin(0, 80, true);
-
-  // Attach onTimer function to our timer 
-  timerAttachInterrupt(timer, &onTimer, true);
-  //Set alarm to call onTimer function every second 1 tick is 1us
-  // => 1 second is 1000000us 
-  // Repeat the alarm (third parameter) 
-  timerAlarmWrite(timer, 100000, true);
-  timerAlarmEnable(timer); //enable 
-  
   Serial.begin(115200);
-  
-  MDDS60Serial.begin(9600); 
-  MDDS60Serial1.begin(9600);
-  
-  Straightahead();
-
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(0, INPUT_PULLUP);
+  board1.begin();
+  board1.setPWMFreq(60);
 }
 
 void loop() {
-    delay(5);
-    /*
-    digitalWrite(UE, LOW);
-    delayMicroseconds(2);  
-    digitalWrite(UE, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(UE, LOW);
-    durationF = pulseIn(UF, HIGH);
-    Front = durationF * SOUND_SPEED/2;
-    digitalWrite(UE, LOW);
-    delayMicroseconds(2);  
-    digitalWrite(UE, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(UE, LOW);
-    durationB = pulseIn(UB, HIGH);
-    Back = durationB * SOUND_SPEED/2;
-    digitalWrite(UE, LOW);
-    delayMicroseconds(2);  
-    digitalWrite(UE, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(UE, LOW);
-    durationR = pulseIn(UR, HIGH);
-    Right = durationR * SOUND_SPEED/2;
-    digitalWrite(UE, LOW);
-    delayMicroseconds(2);  
-    digitalWrite(UE, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(UE, LOW);
-    durationL = pulseIn(UL, HIGH);
-    Left = durationL * SOUND_SPEED/2;
-*/
+  if (Serial.available() > 0) {
+    // Read the incoming JSON data
+    String jsonData = Serial.readStringUntil('\n');
 
- 
-Serial.print("Front Left:[");
-Serial.print(cFL);
-Serial.print("][");
-Serial.print(dFL);
-Serial.print("], Front Right:[");
-Serial.print(cFR);
-Serial.print("][");
-Serial.print(dFR);
-Serial.print("], Rear Left:[");
-Serial.print(cRL);
-Serial.print("][");
-Serial.print(dRL);
-Serial.print("], Rear Right:[");
-Serial.print(cRR);
-Serial.print("][");
-Serial.print(dRR);
-Serial.print("]");
-Serial.print(", F: ");
-Serial.print(Front);
-Serial.print(", B: ");
-Serial.print(Back);
-Serial.print(", L: ");
-Serial.print(Left);
-Serial.print(", R:");
-Serial.println(Right);
+    // Parse the JSON
+    DeserializationError error = deserializeJson(doc, jsonData);
 
-delay(5);
+    if (error) {
+      Serial.println("Error parsing JSON");
+      return;
+    }
 
+    // Access individual values from the received JSON
+    if (L1 >= a6_min && L1 <= a6_max) { // a6
+      int l11 = doc["L1"];
+      L1 = constrain(L1 - (l11*Step), a6_min, a6_max);
+    }
+    if (L2 >= a5_min && L2 <= a5_max) { // a5
+      int l22 = doc["L2"];
+      L2 = constrain(L2 - (l22*Step), a5_min, a5_max);
+    }
+    if (R1 >= a4_min && R1 <= a4_max) {
+      int r11 = doc["R1"];
+      R1 = constrain(R1 - (r11*Step), a4_min, a4_max);
+    }
+    if (R2 >= a1_min && R2 <= a1_max) {
+      int r22 = doc["R2"];
+      R2 = constrain(R2 - (r22*Step), a1_min, a1_max);
+    }
+
+    // Prepare response JSON
+    // responseDoc["status"] = "OK";
+    // responseDoc["L1"] = L1; // Echo back the received values
+    // responseDoc["L2"] = L2;
+    // responseDoc["R1"] = R1;
+    // responseDoc["R2"] = R2;
+    responseDoc["a6"] = L1; // Echo back the received values
+    responseDoc["a5"] = L2;
+    responseDoc["a4"] = R1;
+    responseDoc["a1"] = R2;
+
+    // Serialize the JSON response
+    String jsonResponse;
+    serializeJson(responseDoc, jsonResponse);
+
+    // Send the response back to the serial port
+    Serial.println(jsonResponse);
+    
+  }
+
+  // a6 = map(L1, 1, 100, a6_min, a6_max); // 120 - 20
+  // a5 = map(L2, 1, 100, a5_min, a5_max); // 
+  // a4 = map(R1, 1, 100, a4_min, a4_max);
+  // a3 = map(switch1Smoothed,1,100,179,180); // servo arm 3 -still wrong direction
+  // a2 = map(switch1Smoothed,1,100,60,15); // servo arm 2 -still wrong direction 
+  // a1 = map(R2, 1, 100, a1_min, a1_max);
+
+  board1.setPWM(12, 0, angleToPulse(L1, 6));
+  board1.setPWM(4, 0, angleToPulse(L2, 5)); // arm 5
+  board1.setPWM(8, 0, angleToPulse(R1, 4)); // arm 4 // servo heating while moving
+  // board1.setPWM(2, 0, angleToPulse(a3, 3)); // arm 3 // servo need to change
+  // board1.setPWM(0, 0, angleToPulse(a2, 2)); // arm 2 // servo heating while moving
+  board1.setPWM(15, 0, angleToPulse(R2, 1)); // arm 1
+
+  delay(20);
+}
+int angleToPulse(int ang, int arm) {
+  return map(ang, 0, 180, SERVOMIN, SERVOMAX);
 }

@@ -16,6 +16,7 @@ int a5_max = 50, a5_min = 10;
 int a4_max = 85, a4_min = 60;
 int a1_max = 180, a1_min = 110;
 int L1 = a6_max, L2 = a5_max, R1 = a4_max, R2 = a1_max;
+int Step = 3;
 
 void setup() {
   Serial.begin(115200);
@@ -41,19 +42,19 @@ void loop() {
     // Access individual values from the received JSON
     if (L1 >= a6_min && L1 <= a6_max) { // a6
       int l11 = doc["L1"];
-      L1 = constrain(L1 - l11, a6_min, a6_max);
+      L1 = constrain(L1 - (l11*Step), a6_min, a6_max);
     }
     if (L2 >= a5_min && L2 <= a5_max) { // a5
       int l22 = doc["L2"];
-      L2 = constrain(L2 - l22, a5_min, a5_max);
+      L2 = constrain(L2 - (l22*Step), a5_min, a5_max);
     }
     if (R1 >= a4_min && R1 <= a4_max) {
       int r11 = doc["R1"];
-      R1 = constrain(R1 - r11, a4_min, a4_max);
+      R1 = constrain(R1 - (r11*Step), a4_min, a4_max);
     }
     if (R2 >= a1_min && R2 <= a1_max) {
       int r22 = doc["R2"];
-      R2 = constrain(R2 - r22, a1_min, a1_max);
+      R2 = constrain(R2 - (r22*Step), a1_min, a1_max);
     }
 
     // Prepare response JSON
