@@ -1,8 +1,0 @@
-# goal
-geometry_msgs/Point target
----
-# result
-float32 used_time
----
-# feedback
-float32 distance_to_target
