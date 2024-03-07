@@ -32,7 +32,7 @@ void loop() {
   a4 = map(switch1Smoothed,1,100,70,95); // servo arm 4
   a3 = map(switch1Smoothed,1,100,179,180); // servo arm 3 -still wrong direction
   a2 = map(switch1Smoothed,1,100,60,15); // servo arm 2 -still wrong direction 
-  a1 = map(switch1Smoothed,1,100,110,180); // servo arm 1
+  a1 = map(switch1Smoothed,1,100,179,2); // servo arm 1
 
   // Serial.println(switch1Smoothed);
   // Serial.println(switch1Prev);

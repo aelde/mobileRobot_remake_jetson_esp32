@@ -11,11 +11,14 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 
 const int LED_PIN = 2;  
 int a6 = 0,a5 = 0,a4 = 0,a3 = 0,a2 = 0,a1 = 0;
-int a6_max = 120, a6_min = 10;
-int a5_max = 50, a5_min = 10;
-int a4_max = 85, a4_min = 60;
-int a1_max = 180, a1_min = 110;
-int L1 = a6_max, L2 = a5_max, R1 = a4_max, R2 = a1_max;
+int a6_max = 180, a6_min = 0; // 180 start - 10 end
+int a5_max = 180, a5_min = 80; // 180 start - 0 end
+int a4_max = 180, a4_min = 0; // 180 start - 0 end
+int a3_max = 90, a3_min = 0; // 90 start - 0 end
+int a2_max = 90, a2_min = 0; // reversed servo 0 - 90
+int a1_max = 180, a1_min = 110; // 180 start - 110 end
+int L1 = 90;
+int L2 = a5_max, R1 = a4_max, R2 = a1_max;
 int Step = 3;
 
 void setup() {
@@ -52,6 +55,14 @@ void loop() {
       int r11 = doc["R1"];
       R1 = constrain(R1 - (r11*Step), a4_min, a4_max);
     }
+    // if (R2 >= a3_min && R2 <= a3_max) {
+    //   int r22 = doc["R2"];
+    //   R2 = constrain(R2 - (r22*Step), a3_min, a3_max);
+    // }
+    // if (R2 >= a2_min && R2 <= a2_max) {
+    //   int r22 = doc["R2"];
+    //   R2 = constrain(R2 - (r22*Step), a2_min, a2_max);
+    // }
     if (R2 >= a1_min && R2 <= a1_max) {
       int r22 = doc["R2"];
       R2 = constrain(R2 - (r22*Step), a1_min, a1_max);
@@ -84,12 +95,12 @@ void loop() {
   // a2 = map(switch1Smoothed,1,100,60,15); // servo arm 2 -still wrong direction 
   // a1 = map(R2, 1, 100, a1_min, a1_max);
 
-  board1.setPWM(12, 0, angleToPulse(L1, 6));
+  board1.setPWM(15, 0, angleToPulse(L1, 6));
   board1.setPWM(4, 0, angleToPulse(L2, 5)); // arm 5
   board1.setPWM(8, 0, angleToPulse(R1, 4)); // arm 4 // servo heating while moving
   // board1.setPWM(2, 0, angleToPulse(a3, 3)); // arm 3 // servo need to change
   // board1.setPWM(0, 0, angleToPulse(a2, 2)); // arm 2 // servo heating while moving
-  board1.setPWM(15, 0, angleToPulse(R2, 1)); // arm 1
+  board1.setPWM(0, 0, angleToPulse(R2, 1)); // arm 1
 
   delay(20);
 }

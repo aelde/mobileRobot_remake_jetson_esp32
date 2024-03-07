@@ -21,38 +21,42 @@ class TestMotorControl(Node):
         # param set
         self.arm_cmd = 'no arm move'
         self.arm_speed = 0
+        self.toggle_OE = 0
         self.json_messages = [
-            {"L1": 0, "L2": 0, "R1": 0, "R2": 0}
+            {"L1_a6": 0, "L2_a5": 0, "L1_a3": 0, "L2_a2": 0, "R1_a4": 0, "R2_a1": 0} 
         ]
-
     def update_control(self, msg):
         for i,j in enumerate(msg.data):
             if i == 2 : 
                 self.arm_direction_control(j)
+            if i == 3 :
+                self.toggle_OE = j
     def arm_direction_control(self, cmd):
         # result = 'no arm move'
         if cmd != -1 :
             arms = ['L1','L2','R1','R2']
             direc = ['up','down','right','left']
-            if direc[cmd%4] == 'up' :
+            if direc[cmd%4] == 'up' or direc[cmd%4] == 'right' :
                 self.arm_speed = 1
-            elif direc[cmd%4] == 'down' :
+            elif direc[cmd%4] == 'down' or direc[cmd%4] == 'left' :
                 self.arm_speed = -1
-            self.arm_cmd = f'{arms[cmd//4]}'       
+            self.arm_cmd = f'{arms[cmd//4]}_{direc[cmd%4]}'       
         else: 
             self.arm_speed = 0
         self.armcontrol()
         
     def armcontrol(self):
         # Convert data to bytes and send it over the serial port
-        L1 = self.arm_speed if self.arm_cmd == 'L1' else 0
-        L2 = self.arm_speed if self.arm_cmd == 'L2' else 0
-        R1 = self.arm_speed if self.arm_cmd == 'R1' else 0
-        R2 = self.arm_speed if self.arm_cmd == 'R2' else 0
+        L1_a6 = self.arm_speed if self.arm_cmd == 'L1_up' or self.arm_cmd == 'L1_down' else 0
+        L2_a5 = self.arm_speed if self.arm_cmd == 'L2_up' or self.arm_cmd == 'L2_down' else 0
+        L1_2_a3 = self.arm_speed if self.arm_cmd == 'L1_right' or self.arm_cmd == 'L1_left' else 0
+        L2_2_a2 = self.arm_speed if self.arm_cmd == 'L2_right' or self.arm_cmd == 'L2_left' else 0
+        R1_a4 = self.arm_speed if self.arm_cmd == 'R1_up' or self.arm_cmd == 'R1_down' else 0
+        R2_a1 = self.arm_speed if self.arm_cmd == 'R2_up' or self.arm_cmd == 'R2_down' else 0
 
         print(self.json_messages)
         self.json_messages = [
-            {"L1": L1, "L2": L2, "R1": R1, "R2": R2}
+            {"L1_a6": L1_a6, "L2_a5": L2_a5, "L1_a3": L1_2_a3, "L2_a2": L2_2_a2, "R1_a4": R1_a4, "R2_a1": R2_a1} 
         ]
         self.json_send(self.json_messages)
         

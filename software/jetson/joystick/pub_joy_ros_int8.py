@@ -24,6 +24,8 @@ class JoystickControlPubNode(Node):
         # param setting
         self.spd = 0
         self.arm_mode = False
+        self.arm_status = 0
+        self.toggle_arm_status = False
         self.car_direction = ''
         self.arm_movement = ''
         
@@ -39,7 +41,7 @@ class JoystickControlPubNode(Node):
         self.direction_move()
         self.arm_move()
         
-        self.get_logger().info(f'spd : {self.spd} , car_direc : {self.car_direction} , arm_move : {self.arm_movement}')
+        self.get_logger().info(f'spd : {self.spd} , car_direc : {self.car_direction} , arm_move : {self.arm_movement}, arm_status : {self.arm_status}')
         msg = Int8MultiArray()
         msg.data = [self.spd, self.car_direction, self.arm_movement]
         self.pub.publish(msg)
@@ -129,6 +131,8 @@ class JoystickControlPubNode(Node):
         # self.car_direction = result
         return self.car_direction 
     def arm_mode_check(self):
+        if self.buttons['options'] == 1 and self.buttons['L1'] == 1: self.arm_status = 1
+        if self.buttons['options'] == 1 and self.buttons['L2'] == 1: self.arm_status = 0
         if self.buttons['L1'] == 1 or self.buttons['L2'] == 1 or self.buttons['R1'] == 1 or self.buttons['R2'] == 1: 
             self.arm_mode = True
         else : self.arm_mode = False
