@@ -21,16 +21,15 @@ class TestMotorControl(Node):
         # param set
         self.arm_cmd = 'no arm move'
         self.arm_speed = 0
-        self.toggle_OE = 0
+        self.toggle_OE = 1
         self.json_messages = [
-            {"L1_a6": 0, "L2_a5": 0, "L1_a3": 0, "L2_a2": 0, "R1_a4": 0, "R2_a1": 0} 
+            # {"L1_a6": 0, "L2_a5": 0, "R1_a4": 0, "L1_a3": 0, "L2_a2": 0, "R2_a1": 0, "OE": 1} 
+            { "R2_a1": 0, "L2_a2": 0, "L1_a3": 0, "R1_a4": 0, "L2_a5": 0, "L1_a6":0,"OE":1}
         ]
     def update_control(self, msg):
         for i,j in enumerate(msg.data):
-            if i == 2 : 
-                self.arm_direction_control(j)
-            if i == 3 :
-                self.toggle_OE = j
+            if i == 2 : self.arm_direction_control(j)
+            if i == 3 : self.toggle_OE = j
     def arm_direction_control(self, cmd):
         # result = 'no arm move'
         if cmd != -1 :
@@ -53,11 +52,14 @@ class TestMotorControl(Node):
         L2_2_a2 = self.arm_speed if self.arm_cmd == 'L2_right' or self.arm_cmd == 'L2_left' else 0
         R1_a4 = self.arm_speed if self.arm_cmd == 'R1_up' or self.arm_cmd == 'R1_down' else 0
         R2_a1 = self.arm_speed if self.arm_cmd == 'R2_up' or self.arm_cmd == 'R2_down' else 0
-
-        print(self.json_messages)
+        
         self.json_messages = [
-            {"L1_a6": L1_a6, "L2_a5": L2_a5, "L1_a3": L1_2_a3, "L2_a2": L2_2_a2, "R1_a4": R1_a4, "R2_a1": R2_a1} 
+            # {"L1_a6": L1_a6, "L2_a5": L2_a5, "R1_a4": R1_a4, "L1_a3": L1_2_a3, "L2_a2": L2_2_a2, "R2_a1": R2_a1, "OE": self.toggle_OE} 
+             { "R2_a1": R2_a1, "L2_a2": L2_2_a2, "L1_a3": L1_2_a3, "R1_a4": R1_a4, "L2_a5": L2_a5, "L1_a6": L1_a6, "OE": self.toggle_OE}
+            # {"L1_a6": 0, "L2_a5": 0, "L1_a3": 0, "L2_a2": 0, "R1_a4": 0, "R2_a1": 0, "OE": 1} 
         ]
+        
+        print(self.json_messages)
         self.json_send(self.json_messages)
         
     def json_send(self,json_messages):

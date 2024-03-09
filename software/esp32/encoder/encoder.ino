@@ -1,109 +1,62 @@
 #include <Wire.h>
-#include <ArduinoJson.h>
 #include <Adafruit_PWMServoDriver.h>
-
-DynamicJsonDocument doc(1024);
-DynamicJsonDocument responseDoc(1024);
-
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
-#define SERVOMIN  125
-#define SERVOMAX  575
+#define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 
-const int LED_PIN = 2;  
-int a6 = 0,a5 = 0,a4 = 0,a3 = 0,a2 = 0,a1 = 0;
-int a6_max = 180, a6_min = 0; // 180 start - 10 end
-int a5_max = 180, a5_min = 80; // 180 start - 0 end
-int a4_max = 180, a4_min = 0; // 180 start - 0 end
-int a3_max = 90, a3_min = 0; // 90 start - 0 end
-int a2_max = 90, a2_min = 0; // reversed servo 0 - 90
-int a1_max = 180, a1_min = 110; // 180 start - 110 end
-int L1 = 90;
-int L2 = a5_max, R1 = a4_max, R2 = a1_max;
-int Step = 3;
+int servoNumber = 0;
+int switch1;
+float switch1Smoothed , switch1Prev , a , a6, a5,a4,a3,a2,a1;
 
 void setup() {
+
   Serial.begin(115200);
-  pinMode(LED_PIN, OUTPUT);
+
   pinMode(0, INPUT_PULLUP);
+
   board1.begin();
-  board1.setPWMFreq(60);
+  board1.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    // Read the incoming JSON data
-    String jsonData = Serial.readStringUntil('\n');
 
-    // Parse the JSON
-    DeserializationError error = deserializeJson(doc, jsonData);
+  switch1 = digitalRead(0);      // read switch
+  switch1 = switch1 * 100;        // multiply by 100
 
-    if (error) {
-      Serial.println("Error parsing JSON");
-      return;
-    }
+  // *** smoothing ***
 
-    // Access individual values from the received JSON
-    if (L1 >= a6_min && L1 <= a6_max) { // a6
-      int l11 = doc["L1"];
-      L1 = constrain(L1 - (l11*Step), a6_min, a6_max);
-    }
-    if (L2 >= a5_min && L2 <= a5_max) { // a5
-      int l22 = doc["L2"];
-      L2 = constrain(L2 - (l22*Step), a5_min, a5_max);
-    }
-    if (R1 >= a4_min && R1 <= a4_max) {
-      int r11 = doc["R1"];
-      R1 = constrain(R1 - (r11*Step), a4_min, a4_max);
-    }
-    // if (R2 >= a3_min && R2 <= a3_max) {
-    //   int r22 = doc["R2"];
-    //   R2 = constrain(R2 - (r22*Step), a3_min, a3_max);
-    // }
-    // if (R2 >= a2_min && R2 <= a2_max) {
-    //   int r22 = doc["R2"];
-    //   R2 = constrain(R2 - (r22*Step), a2_min, a2_max);
-    // }
-    if (R2 >= a1_min && R2 <= a1_max) {
-      int r22 = doc["R2"];
-      R2 = constrain(R2 - (r22*Step), a1_min, a1_max);
-    }
-
-    // Prepare response JSON
-    // responseDoc["status"] = "OK";
-    // responseDoc["L1"] = L1; // Echo back the received values
-    // responseDoc["L2"] = L2;
-    // responseDoc["R1"] = R1;
-    // responseDoc["R2"] = R2;
-    responseDoc["a6"] = L1; // Echo back the received values
-    responseDoc["a5"] = L2;
-    responseDoc["a4"] = R1;
-    responseDoc["a1"] = R2;
-
-    // Serialize the JSON response
-    String jsonResponse;
-    serializeJson(responseDoc, jsonResponse);
-
-    // Send the response back to the serial port
-    Serial.println(jsonResponse);
-    
-  }
-
-  // a6 = map(L1, 1, 100, a6_min, a6_max); // 120 - 20
-  // a5 = map(L2, 1, 100, a5_min, a5_max); // 
-  // a4 = map(R1, 1, 100, a4_min, a4_max);
+  switch1Smoothed = (switch1 * 0.05) + (switch1Prev * 0.95);
+  switch1Prev = switch1Smoothed;
+  a6 = map(switch1Smoothed,1,100,30,90); // servo arm 6 
+  // a5 = map(switch1Smoothed,1,100,20,50); // servo arm 5
+  // a4 = map(switch1Smoothed,1,100,70,95); // servo arm 4
   // a3 = map(switch1Smoothed,1,100,179,180); // servo arm 3 -still wrong direction
   // a2 = map(switch1Smoothed,1,100,60,15); // servo arm 2 -still wrong direction 
-  // a1 = map(R2, 1, 100, a1_min, a1_max);
+  // a1 = map(switch1Smoothed,1,100,179,2); // servo arm 1
 
-  board1.setPWM(15, 0, angleToPulse(L1, 6));
-  board1.setPWM(4, 0, angleToPulse(L2, 5)); // arm 5
-  board1.setPWM(8, 0, angleToPulse(R1, 4)); // arm 4 // servo heating while moving
-  // board1.setPWM(2, 0, angleToPulse(a3, 3)); // arm 3 // servo need to change
-  // board1.setPWM(0, 0, angleToPulse(a2, 2)); // arm 2 // servo heating while moving
-  board1.setPWM(0, 0, angleToPulse(R2, 1)); // arm 1
+  // Serial.println(switch1Smoothed);
+  // Serial.println(switch1Prev);
+  // Serial.println(a);
+  // *** end of smoothing ***
 
-  delay(20);
+  // Serial.print(switch1);                  // print to serial terminal/plotter
+  // Serial.print(" , ");   
+  // Serial.println(a);
+
+  board1.setPWM(12, 0, angleToPulse(a6, 6)); // arm 6
+  // board1.setPWM(4, 0, angleToPulse(a5, 5)); // arm 5
+  // board1.setPWM(8, 0, angleToPulse(a4, 4)); // arm 4
+  // board1.setPWM(2, 0, angleToPulse(a3, 3)); // arm 3
+  // board1.setPWM(0, 0, angleToPulse(a2, 2)); // arm 2
+  // board1.setPWM(15, 0, angleToPulse(a1, 1)); // arm 1
+
+  delay(20);                      // run loop 100 times/second
+
 }
-int angleToPulse(int ang, int arm) {
-  return map(ang, 0, 180, SERVOMIN, SERVOMAX);
+int angleToPulse(int ang, int arm){
+   int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max 
+   Serial.print("arm: ");Serial.print(arm);
+   Serial.print(" Angle: ");Serial.print(ang);
+   Serial.print(" pulse: ");Serial.println(pulse);
+   return pulse;
 }
