@@ -27,11 +27,6 @@ the concept to control smartdrive duo 30 is:
 - 10000000 - 10111111 (128-191) is right wheel go forward
 - 11000000 - 11111111 (192-255) is right wheel go backward
 
-you can see code in /software/jetson/test_ros2/
-
-- file "driver_service_client.py" is ros2 client to interact with user
-- file "driver_service_server.py" is ros2 server control
-
 # controlling encoder 330 ppr(pulse per round)
 this represent how encoder 330 work!
 on encoder they have 2 signals call A signal and B signal
