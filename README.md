@@ -13,6 +13,7 @@ arm 3d: <https://collaborate.shapr3d.com/v/P_J-J_7XLpJSV6bIwB8kV>
 - esp32
 - mg995
 - mg90s
+- dss m15
 - pca9685
 
 # assembly sketch concept
