@@ -3,6 +3,7 @@ import json
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int8MultiArray
+# import pandas as pd
 
 import serial
 import time
@@ -11,7 +12,7 @@ po = serial.tools.list_ports.comports()
 for port in po:    
     print(port.device)
 
-serial_port = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+serial_port = serial.Serial('/dev/ttyUSB2', 115200, timeout=1)
 
 class TestMotorControl(Node):
     def __init__(self):
@@ -22,14 +23,16 @@ class TestMotorControl(Node):
         self.arm_cmd = 'no arm move'
         self.arm_speed = 0
         self.toggle_OE = 1
+        self.auto_mode = 0
         self.json_messages = [
             # {"L1_a6": 0, "L2_a5": 0, "R1_a4": 0, "L1_a3": 0, "L2_a2": 0, "R2_a1": 0, "OE": 1} 
-            { "R2_a1": 0, "L2_a2": 0, "L1_a3": 0, "R1_a4": 0, "L2_a5": 0, "L1_a6":0,"OE":1}
+            {"R2_a1": 0, "L2_a2": 0, "L1_a3": 0, "R1_a4": 0, "L2_a5": 0, "L1_a6":0,"OE":1,"autoM":0}
         ]
     def update_control(self, msg):
         for i,j in enumerate(msg.data):
             if i == 2 : self.arm_direction_control(j)
             if i == 3 : self.toggle_OE = j
+            if i == 4 : self.auto_mode = j
     def arm_direction_control(self, cmd):
         # result = 'no arm move'
         if cmd != -1 :
@@ -54,9 +57,7 @@ class TestMotorControl(Node):
         R2_a1 = self.arm_speed if self.arm_cmd == 'R2_up' or self.arm_cmd == 'R2_down' else 0
         
         self.json_messages = [
-            # {"L1_a6": L1_a6, "L2_a5": L2_a5, "R1_a4": R1_a4, "L1_a3": L1_2_a3, "L2_a2": L2_2_a2, "R2_a1": R2_a1, "OE": self.toggle_OE} 
-             { "R2_a1": R2_a1, "L2_a2": L2_2_a2, "L1_a3": L1_2_a3, "R1_a4": R1_a4, "L2_a5": L2_a5, "L1_a6": L1_a6, "OE": self.toggle_OE}
-            # {"L1_a6": 0, "L2_a5": 0, "L1_a3": 0, "L2_a2": 0, "R1_a4": 0, "R2_a1": 0, "OE": 1} 
+             {"R2_a1": R2_a1, "L2_a2": L2_2_a2, "L1_a3": L1_2_a3, "R1_a4": R1_a4, "L2_a5": L2_a5, "L1_a6": L1_a6, "OE": self.toggle_OE ,"autoM":self.auto_mode}
         ]
         
         print(self.json_messages)
@@ -78,6 +79,7 @@ class TestMotorControl(Node):
         serial_port.write((formatted_json + '\n').encode('utf-8'))
 
         # Read response from ESP32
+        # response = pd.read_csv(serial_port,header=None ,encoding='unicode_escape')
         response = serial_port.readline().decode('utf-8').strip()
 
         try:

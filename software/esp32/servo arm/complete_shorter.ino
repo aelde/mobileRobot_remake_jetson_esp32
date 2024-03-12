@@ -14,32 +14,23 @@ const int OE_PIN = 16;
 
 //   a1.  a2.  a3.  a4. a5. a6.
 int angles_Default[] = { 180, 0, 90, 180, 180, 90 };  // Default angles
-int angles[] = { 180, 0, 90, 180, 180, 90 };          // Initial angles
+int prepare_grap[] = { 110, 90, 90, 180, 108, 108 };
+int angles[6], prevAngles[6];
+int aaa[6] = { 180, 0, 90, 180, 180, 90 };
+
 int angleMins[] = { 110, 0, 0, 0, 80, 0 };
 int angleMaxs[] = { 180, 90, 90, 180, 180, 180 };
 
-int prevAngles[6] = { 180, 0, 90, 180, 180, 90 };
-
-int step = 3;
-
-int pre_OE = 1, cur_OE = 1;
-
-int s = 0;
-int smoothingFactor = 5;
-// float smoothingFactor = 0.05;
-float complementFactor = 0.95;
-// float smoothAngles[6] = {0};
+int step = 3, pre_OE = 1, cur_OE = 1, s = 0;
+float smoothingFactor = 0.05, complementFactor = 0.95;
 float smoothAngles[6] = { 180, 0, 90, 180, 180, 90 };
-float prevSmooth[6] = { 0 };
 float switch1Smoothed, switch1Prev, a6;
-
-int aaa[6] = {180, 0, 90, 180, 180, 90};
 
 void setup() {
   Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
   pinMode(OE_PIN, OUTPUT);
-  digitalWrite(OE_PIN, HIGH);
+  digitalWrite(OE_PIN, LOW);
   board1.begin();
   board1.setPWMFreq(60);
   digitalWrite(LED_PIN, HIGH);
@@ -56,17 +47,10 @@ void loop() {
 
     cur_OE = doc["OE"];
     if (cur_OE != pre_OE) {
-      digitalWrite(OE_PIN, cur_OE);
       if (cur_OE == 1) {
-        // Serial.println("im in bruhhhhhhhh!!!");
-        for (int i = 0; i < 6; i++) {
-          aaa[i] = prevAngles[i] = angles[i];
-          //   angles[i] = smoothAngles[i] = prevAngles[i];
-        }
+        for (int i = 0; i < 6; i++) aaa[i] = prevAngles[i] = angles[i];
       } else {
-        for (int i = 0; i < 6; i++) {
-          angles[i] = smoothAngles[i] = prevAngles[i] = angles_Default[i];
-        }
+        for (int i = 0; i < 6; i++) angles[i] = smoothAngles[i] = prevAngles[i] = angles_Default[i];
       }
       digitalWrite(LED_PIN, cur_OE);
       pre_OE = cur_OE;
@@ -103,72 +87,44 @@ void loop() {
       int L1_a6 = doc["L1_a6"];
       angles[5] = constrain(angles[5] + (L1_a6 * step), angleMins[5], angleMaxs[5]);
     }
+
+    responseDoc["OE"] = cur_OE;
+    for (int i = 0; i < 6; i++) {
+      responseDoc["a" + String(i + 1)] = (cur_OE == 0) ? angles[i] : aaa[i];
+    }
+
+    String jsonResponse;
+    serializeJson(responseDoc, jsonResponse);
+    Serial.println(jsonResponse);
   }
 
-  responseDoc["OE"] = cur_OE;
+  // responseDoc["OE"] = cur_OE;
+  // for (int i = 0; i < 6; i++) {
+  //   responseDoc["a" + String(i + 1)] = (cur_OE == 0) ? angles[i] : aaa[i];
+  // }
+
+  // String jsonResponse;
+  // serializeJson(responseDoc, jsonResponse);
+  // Serial.println(jsonResponse);
+
+  setDefault2();
+  // if (angles[5]> 150){
+  //     digitalWrite(LED_PIN, 1);
+  // }else {
+  //     digitalWrite(LED_PIN, 0);
+
+  // }
   for (int i = 0; i < 6; i++) {
-    responseDoc["a" + String(i + 1)] = (cur_OE == 0) ? angles[i] : aaa[i];
+    board1.setPWM(i, 0, map((cur_OE == 1) ? aaa[i] : angles[i], 0, 180, SERVOMIN, SERVOMAX));
   }
-  String jsonResponse;
-  serializeJson(responseDoc, jsonResponse);
-  Serial.println(jsonResponse);
 
-  if (cur_OE == 1) {
-    setDefault2();
-    for (int i = 0; i < 6; i++) {
-      board1.setPWM(i, 0, angleToPulse(aaa[i], i));
-    }
-  } else {
-    for (int i = 0; i < 6; i++) {
-      board1.setPWM(i, 0, angleToPulse(angles[i], i));
-    }
-  }
-  // printt(cur_OE);
-  delay(500);
+  delay(30);
 }
-int angleToPulse(int ang, int arm) {
-  return map(ang, 0, 180, SERVOMIN, SERVOMAX);
-}
+
 void setDefault2() {
   for (int i = 0; i < 6; i++) {
-    switch1Smoothed = (s * 0.05) + (switch1Prev * 0.95);
+    switch1Smoothed = (s * smoothingFactor) + (switch1Prev * complementFactor);
     switch1Prev = switch1Smoothed;
     aaa[i] = map(switch1Smoothed, 0, 100, angles_Default[i], prevAngles[i]);
   }
 }
-// void printt(int OE) {
-//   Serial.print("OE:");
-//   Serial.print(cur_OE);
-
-//   for (int i = 0; i < 6; i++) {
-//     Serial.print(" a" + String(i + 1) + ":");
-//     Serial.print((OE == 0) ? angles[i] : aaa[i]);
-//   }
-//   Serial.print(" || ");
-//   Serial.print(prevAngles[0]);
-//   Serial.print(" ");
-//   Serial.print(prevAngles[1]);
-//   Serial.print(" ");
-//   Serial.print(prevAngles[2]);
-//   Serial.print(" ");
-//   Serial.print(prevAngles[3]);
-//   Serial.print(" ");
-//   Serial.print(prevAngles[4]);
-//   Serial.print(" ");
-//   Serial.print(prevAngles[5]);
-//   Serial.print(" || ");
-//   Serial.print(" a1:");
-//   Serial.print(aaa[0]);
-//   Serial.print(" a2:");
-//   Serial.print(aaa[1]);
-//   Serial.print(" a3:");
-//   Serial.print(aaa[2]);
-//   Serial.print(" a4:");
-//   Serial.print(aaa[3]);
-//   Serial.print(" a5:");
-//   Serial.print(aaa[4]);
-//   Serial.print(" a6:");
-//   Serial.print(aaa[5]);
-//   Serial.print(" s:");
-//   Serial.println(s);
-// }

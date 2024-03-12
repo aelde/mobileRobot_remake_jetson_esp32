@@ -25,6 +25,8 @@ class JoystickControlPubNode(Node):
         self.spd = 0
         self.arm_mode = False
         self.arm_OE = 1
+        self.auto_mode = True
+        self.auto_move = 0
         self.toggle_arm_OE = False
         self.car_direction = ''
         self.arm_movement = ''
@@ -36,14 +38,16 @@ class JoystickControlPubNode(Node):
         # self.c += 1   
         # print(self.buttons)
         self.getJS()
+        self.arm_OE_check()
+        self.arm_autoMode_check()
         self.arm_mode_check()
         self.spd_counter()
         self.direction_move()
         self.arm_move()
         
-        self.get_logger().info(f'spd : {self.spd} , car_direc : {self.car_direction} , arm_move : {self.arm_movement}, arm_OE : {self.arm_OE}')
+        print(f'spd : {self.spd} , car_direc : {self.car_direction} , arm_move : {self.arm_movement}, arm_OE : {self.arm_OE} ,auto_mode : {self.auto_mode}, auto_move : {self.auto_move}')
         msg = Int8MultiArray()
-        msg.data = [self.spd, self.car_direction, self.arm_movement, self.arm_OE]
+        msg.data = [self.spd, self.car_direction, self.arm_movement, self.arm_OE, self.auto_move]
         self.pub.publish(msg)
               
     def getJS(self, name=''):
@@ -131,26 +135,45 @@ class JoystickControlPubNode(Node):
         # self.car_direction = result
         return self.car_direction 
     def arm_mode_check(self):
-        if self.buttons['options'] == 1 and self.buttons['L1'] == 1: self.arm_OE = 0
-        if self.buttons['share'] == 1 and self.buttons['L1'] == 1: self.arm_OE = 1
         if self.buttons['L1'] == 1 or self.buttons['L2'] == 1 or self.buttons['R1'] == 1 or self.buttons['R2'] == 1: 
             self.arm_mode = True
         else : self.arm_mode = False
         return self.arm_mode
+    def arm_OE_check(self):
+        if self.buttons['options'] == 1 and self.buttons['L1'] == 1: 
+            self.arm_OE = 0
+            self.auto_mode = False
+        if self.buttons['share'] == 1 and self.buttons['L1'] == 1: 
+            self.arm_OE = 1
+            self.auto_mode = True
+        return self.arm_OE , self.auto_mode
+    def arm_autoMode_check(self):
+        if self.auto_mode:
+            if self.buttons['L1'] == 1 and self.buttons['1'] == 1: 
+                self.auto_move = 0
+            if self.buttons['L1'] == 1 and self.buttons['2'] == 1: 
+                self.auto_move = 1
+            if self.buttons['L1'] == 1 and self.buttons['3'] == 1: 
+                self.auto_move = 2
+            if self.buttons['L1'] == 1 and self.buttons['4'] == 1: 
+                self.auto_move = 3
+            return self.auto_move
     def arm_move(self):
-        result = 'no arm movement'
-        r = -1
-        arms = ['L1','L2','R1','R2']
-        direc = ['up','down','right','left']
-        b = ['1','3','2','4']
-        for i in range(len(arms)):
-            for j in range(len(b)):
-                if self.buttons[arms[i]] == 1 and self.buttons[b[j]] == 1:
-                    result = f'arm {arms[i]} {direc[j]}'
-                    r = i*4 + j
-        self.arm_movement = r
-        # self.arm_movement = result
+        self.arm_movement = -1
+        if not self.auto_mode:
+            result = 'no arm movement'
+            r = -1
+            arms = ['L1','L2','R1','R2']
+            direc = ['up','down','right','left']
+            b = ['1','3','2','4']
+            for i in range(len(arms)):
+                for j in range(len(b)):
+                    if self.buttons[arms[i]] == 1 and self.buttons[b[j]] == 1:
+                        result = f'arm {arms[i]} {direc[j]}'
+                        r = i*4 + j
+            self.arm_movement = r
         return self.arm_movement
+            
 def main(args=None):
 	rclpy.init()
 	my_pub = JoystickControlPubNode()

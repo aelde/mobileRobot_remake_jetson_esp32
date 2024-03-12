@@ -97,15 +97,15 @@ class TestMotorControl(Node):
         self.B_L = 0
         self.B_R = 192
     def go_forward(self):
-        self.F_L = 0 + self.spd
-        self.F_R = 128 + self.spd
-        self.B_L = 0 + self.spd
-        self.B_R = 128 + self.spd
-    def go_backward(self):
         self.F_L = 64 + self.spd
         self.F_R = 192 + self.spd
         self.B_L = 64 + self.spd
         self.B_R = 192 + self.spd
+    def go_backward(self):
+       self.F_L = 0 + self.spd
+       self.F_R = 128 + self.spd
+       self.B_L = 0 + self.spd
+       self.B_R = 128 + self.spd
     def go_right(self):
         self.F_L = 0 + self.spd
         self.F_R = 192 + self.spd
@@ -116,22 +116,22 @@ class TestMotorControl(Node):
         self.F_R = 128 + self.spd
         self.B_L = 0 + self.spd
         self.B_R = 192 + self.spd
-    def go_forward_left(self):
+    def go_backward_left(self):
         self.F_L = 0
         self.F_R = 128 + self.spd
         self.B_L = 0 + self.spd
         self.B_R = 192
-    def go_forward_right(self):
+    def go_backward_right(self):
         self.F_L = 0 + self.spd
         self.F_R = 128   
         self.B_L = 0
         self.B_R = 128 + self.spd
-    def go_backward_left(self):
+    def go_forward_left(self):
         self.F_L = 64 + self.spd
         self.F_R = 128
         self.B_L = 0
         self.B_R = 192 + self.spd
-    def go_backward_right(self):
+    def go_forward_right(self):
         self.F_L = 0
         self.F_R = 192 + self.spd
         self.B_L = 64 + self.spd
