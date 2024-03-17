@@ -16,23 +16,24 @@ int step = 3, pre_OE = 1, cur_OE = 1, s = 0;
 int autoM = 0, busy = 0;
 char l[20]; // Changed l to an array of characters
 float switch1Smoothed, switch1Prev, a6;
-float smoothingFactor = 0.0005, complementFactor = 0.9995;
+float smoothingFactor = 0.001, complementFactor = 0.999;
 
 int maxV = 90, minV = 30;
 int angle_default = 180;
 int angle_grip = 110;
 
-// a1, a2, a3, a4, a5, a6.
-int angles_Current[6] = {180, 0, 90, 180, 180, 90}; // Initial angles
-int angles_Default[6] = {180, 0, 90, 180, 180, 90};  // Default angles
-int angles_Grip[6] = {110, 90, 90, 160, 140, 96};   // Grip angles
-int angles_Gripping[6] = {180, 90, 90, 160, 140, 96}; // gripping
-int angles_After_Grip[6] = {180 , 40, 90, 180, 180, 90}; // after grip angles
+// a1, a2, a3, a4, a5, a6
+int angles_Current[6] =    {70, 10, 90, 170, 180, 110}; // Initial angles
+int angles_Default[6] =    {70, 10, 90, 170, 180, 110};  // Default angles
+int angles_Grip[6] =       {10, 40, 90, 130, 110, 110};   // Grip angles
+int angles_Gripping[6] =   {65, 40, 90, 130, 110, 110}; // gripping
+int angles_After_Grip[6] = {65, 40, 90, 130, 160, 110}; // after grip angles
+int angles_Handups[6] =    { 4, 70, 90,  40, 130, 110}; // hand ups
 int aa[6] = {0, 0, 0, 0, 0, 0};
 int aaa[6] = {0, 0, 0, 0, 0, 0};
 // a1, a2, a3, a4, a5, a6.
-int angleMins[] = {110, 0, 0, 0, 80, 0};
-int angleMaxs[] = {180, 90, 90, 180, 180, 180};
+int angleMins[] = {5, 10, 89, 90, 80, 0};
+int angleMaxs[] = {70, 70, 90, 170, 180, 180};
 
 void setup() {
   Serial.begin(115200);
@@ -116,13 +117,14 @@ void loop() {
     // Serial.println("im in");
     s = 100, busy = 1;
     // if targetAngles == De
-    while (anyAngleDiffExceedsThreshold(angles_Current, targetAngles, 2)) {
+    while (anyAngleDiffExceedsThreshold(angles_Current, targetAngles, 3)) {
       for (int i = 0; i < 6; i++) {
         angles_Current[i] = smoothMove(angles_Current[i], targetAngles[i]);
       }
-          for (int i = 0; i < 6; i++) {
-    board1.setPWM(i, 0, angleToPulse(angles_Current[i]));
-  }
+  //         for (int i = 0; i < 6; i++) {
+  //   board1.setPWM(i, 0, angleToPulse(angles_Current[i]));
+  // }
+      boardControl(angles_Current);
       // jsonPrint(angles_Current);
       delay(20);
     }
@@ -132,9 +134,10 @@ void loop() {
     s = 0, busy = 0, switch1Smoothed = 0, switch1Prev = 0;
     memcpy(angles_Current, targetAngles, sizeof(angles_Current));  // angles_Current[6] = aa[6];
   }
-    for (int i = 0; i < 6; i++) {
-    board1.setPWM(i, 0, angleToPulse(angles_Current[i]));
-  }
+  //   for (int i = 0; i < 6; i++) {
+  //   board1.setPWM(i, 0, angleToPulse(angles_Current[i]));
+  // }
+  boardControl(angles_Current);
 // printAngles("ei", angles_Current);
   delay(20);
 }
@@ -183,4 +186,14 @@ int angleToPulse(int ang){
    int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max 
    return pulse;
 }
- 
+void boardControl(int angles_Current[]){
+    for (int i = 0; i < 6; i++) {
+    board1.setPWM(i, 0, angleToPulse(angles_Current[i]));
+  }
+    // board1.setPWM(0, 0, angleToPulse(angles_Current[0]));
+    // board1.setPWM(1, 0, angleToPulse(angles_Current[1]));
+    // board1.setPWM(2, 0, angleToPulse(angles_Current[2]));
+    // board1.setPWM(4, 0, angleToPulse(angles_Current[4]));
+    // board1.setPWM(5, 0, angleToPulse(angles_Current[5]));
+    // board1.setPWM(7, 0, angleToPulse(angles_Current[3]));
+}

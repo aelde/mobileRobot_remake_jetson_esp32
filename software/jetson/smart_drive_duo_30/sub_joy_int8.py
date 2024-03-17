@@ -106,12 +106,12 @@ class TestMotorControl(Node):
        self.F_R = 128 + self.spd
        self.B_L = 0 + self.spd
        self.B_R = 128 + self.spd
-    def go_right(self):
+    def go_left(self):
         self.F_L = 0 + self.spd
         self.F_R = 192 + self.spd
         self.B_L = 64 + self.spd
         self.B_R = 128 + self.spd
-    def go_left(self):
+    def go_right(self):
         self.F_L = 64 + self.spd
         self.F_R = 128 + self.spd
         self.B_L = 0 + self.spd
