@@ -41,7 +41,5 @@ on encoder they have 2 signals call A signal and B signal
 ![คำนวนspec servoใหม่](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/94ed7b0c-5b21-4169-b747-9cebf3cf6451)
 
 -------------
-บอลหนัก 298g 
-![S__671779](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/eb129691-0402-4dd1-90b1-3e3abecfea6d)
 
 (มีอัพเดทโค้ดเรื่อยๆนะครับ)
