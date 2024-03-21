@@ -42,5 +42,6 @@ on encoder they have 2 signals call A signal and B signal
 
 -------------
 บอลหนัก 298g 
+![S__671779](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/eb129691-0402-4dd1-90b1-3e3abecfea6d)
 
 (มีอัพเดทโค้ดเรื่อยๆนะครับ)
