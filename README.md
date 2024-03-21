@@ -35,5 +35,8 @@ this represent how encoder 330 work!
 on encoder they have 2 signals call A signal and B signal
 ![S__3727363](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/977466c0-7696-4b37-be79-eb2625588115)
 
+# problems in this project
+1. arm problem : servo ร้อนและแรงตก ต้องคำนวน spec ใหม่
+
 
 (มีอัพเดทโค้ดเรื่อยๆนะครับ)
