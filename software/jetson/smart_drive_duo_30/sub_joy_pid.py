@@ -1,5 +1,6 @@
 #!/usr/bin/env python3 
 import rclpy
+import json
 from rclpy.node import Node
 from std_msgs.msg import Int8MultiArray
 
@@ -17,6 +18,8 @@ for port in po:
 
 s = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
 ss = serial.Serial('/dev/ttyUSB1', 9600, timeout=1)
+serial_port = serial.Serial('/dev/ttyUSB2', 115200, timeout=1)
+
 
 # ---------------------------
 # input : encoder(ppr)
@@ -50,11 +53,16 @@ prevPFr = 0
 prevPRL = 0
 prevPRR = 0
 
+diffRPM_time = 0
 prevTick_FL = 0
  
 desiredRPMR = 0 # desired spd
 
-prevRPM_time = 0 ; prevTime_FL = 0 ; prev_err_FL = 0 ; sumErr_FL = 0 ; dErr_FL = 0
+prevRPM_time = 0 
+prevTime_FL = 0 
+prev_err_FL = 0 
+sumErr_FL = 0 
+dErr_FL = 0
 def counterRPM(inpFL, inpFR, inpRL, inpRR): # counterRPM
     curPFl = inpFL
     curPFr = inpFR
@@ -67,17 +75,19 @@ def counterRPM(inpFL, inpFR, inpRL, inpRR): # counterRPM
     RPM_Rl = (((curPRL - prevPRL) / PPR) / (diffRPM_time * 0.001)) * 60
     RPM_Rr = (((curPRR - prevPRR) / PPR) / (diffRPM_time * 0.001)) * 60
     
-    prevPFl = curPFl
-    prevPFr = curPFr
-    prevPRL = curPRL
-    prevPRR = curPRR
+    prevPFl = round(curPFl, 1)
+    prevPFr = round(curPFr , 1)
+    prevPRL = round(curPRL, 1)
+    prevPRR = round(curPRR, 1)
     prevRPM_time = curRPM_time
+    
+    print(f'FL : {RPM_Fl}, FR : {RPM_Fr}, RL : {RPM_Rl}, RR : {RPM_Rr}')
     # feedback_vel_msg.linear.x = RPM_l; // RPM_l;
     # feedback_vel_msg.linear.y = RPM_r;
     # feedback_vel_msg.angular.x = control_outL;
     # feedback_vel_msg.angular.y = control_outR;
     # feedback_vel_msg.angular.z = ki;
-
+    
 def compputePID_FL(desiredRPM_FL, measuredTick_FL, dir):
     curTick_FL = measuredTick_FL
     curtTime_FL = int(time.time() * 1000) # millisecond
@@ -108,6 +118,8 @@ def compputePID_FL(desiredRPM_FL, measuredTick_FL, dir):
     prev_err_FL = err_FL
     prevTick_FL = curTick_FL
     prevTime_FL = curtTime_FL
+    
+    return control_out_FL
 # ------------------------
 class TestMotorControl(Node):
     def __init__(self):
@@ -129,6 +141,12 @@ class TestMotorControl(Node):
             if i == 1 : 
                 # print(f'car : {self.car_direction_control(j)}')
                 self.get_logger().info(f'car : {self.car_direction_control(j)}')
+        r = self.send_json_and_receive_response()
+        if r :
+            print("Received response:")
+            print(json.dumps(r, indent=2))
+        counterRPM(self.F_L, self.F_R, self.B_L, self.B_R)
+            
 # mode   [stop a, stop, for, back, left, right, for left, for right, bac left, bac right, t left, l right]
 # nuber  [-1    , 0   , 1  , 2   , 3   , 4    , 5       , 6        , 7       , 8        , 9     , 10]
     def car_direction_control(self, cmd):
@@ -137,10 +155,10 @@ class TestMotorControl(Node):
             self.stop()
             feedback = 'stop'
         elif cmd == 1:
-            self.go_forward()
+            self.go_backward()
             feedback = 'go forward'
         elif cmd == 2:
-            self.go_backward()
+            self.go_forward()
             feedback = 'go backward'
         elif cmd == 3:
             self.go_left()
@@ -167,6 +185,8 @@ class TestMotorControl(Node):
             self.turn_right()
             feedback = 'turn right'
         self.control()
+
+        
         return feedback
 
     # mode   [stop a, stop, for, back, left, right, for left, for right, bac left, bac right, t left, l right]
@@ -241,7 +261,21 @@ class TestMotorControl(Node):
         s.write(packetBL)
         s.write(packetBR)
         # print(f'received massage!')
+        
+    def send_json_and_receive_response(self):
+        # Read response from ESP32
+       
+        response = serial_port.readline().decode('utf-8').strip()
 
+        try:
+            # Parse the received JSON response
+            response_data = json.loads(response)
+            # print(f"Received response: {response_data}")
+            return response_data
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON response: {e}")
+            return None
+        
 def main(args=None):
     rclpy.init()
     server = TestMotorControl()

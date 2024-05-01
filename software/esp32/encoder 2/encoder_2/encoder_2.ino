@@ -1,3 +1,9 @@
+#include <Wire.h>
+#include <ArduinoJson.h>
+
+DynamicJsonDocument doc(1024);
+DynamicJsonDocument responseDoc(1024);
+
 #include <SoftwareSerial.h>
 //#include <NewPing.h>
 // Incremental Encoder Spec  330 ppr
@@ -63,6 +69,22 @@ int Back = 0;
 int Left = 0;
 int Right = 0;
 
+void jsonPrint() {
+    responseDoc["FL_cFL"] = cFL;
+    responseDoc["FL_dFL"] = dFL;
+    responseDoc["FR_cFR"] = cFR;
+    responseDoc["FR_dFR"] = dFR;
+    responseDoc["RL_cRL"] = cRL;
+    responseDoc["RL_dRL"] = dRL;
+    responseDoc["RR_cRR"] = cRR;
+    responseDoc["RR_dRR"] = dRR;
+    // for (int i = 0; i < 6; i++) {
+    //   responseDoc["a" + String(i + 1)] = angles[i];
+    // }
+    String jsonResponse;
+    serializeJson(responseDoc, jsonResponse);
+    Serial.println(jsonResponse);
+}
 
 void IRAM_ATTR onTimer(){ 
   dFL=(cFL-lFL)*10;
@@ -155,10 +177,10 @@ void setup() {
   
   Serial.begin(115200);
   
-  MDDS60Serial.begin(9600); 
-  MDDS60Serial1.begin(9600);
+  // MDDS60Serial.begin(9600); 
+  // MDDS60Serial1.begin(9600);
   
-  Straightahead();
+  // Straightahead();
 
 }
 
@@ -221,6 +243,8 @@ Serial.print(", L: ");
 Serial.print(Left);
 Serial.print(", R:");
 Serial.println(Right);
+
+jsonPrint();
 
 delay(5);
 

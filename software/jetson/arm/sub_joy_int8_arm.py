@@ -16,7 +16,7 @@ serial_port = serial.Serial('/dev/ttyUSB2', 115200, timeout=1)
 
 class TestMotorControl(Node):
     def __init__(self):
-        super().__init__('joy_control_service_server')
+        super().__init__('arm_control_node')
         self.sub = self.create_subscription(Int8MultiArray, 'joystick_topic', self.update_control, 10)
         
         # param set
@@ -25,7 +25,6 @@ class TestMotorControl(Node):
         self.toggle_OE = 1
         self.auto_mode = 0
         self.json_messages = [
-            # {"L1_a6": 0, "L2_a5": 0, "R1_a4": 0, "L1_a3": 0, "L2_a2": 0, "R2_a1": 0, "OE": 1} 
             {"R2_a1": 0, "L2_a2": 0, "L1_a3": 0, "R1_a4": 0, "L2_a5": 0, "L1_a6":0,"OE":1,"autoM":0}
         ]
     def update_control(self, msg):
@@ -33,6 +32,7 @@ class TestMotorControl(Node):
             if i == 2 : self.arm_direction_control(j)
             if i == 3 : self.toggle_OE = j
             if i == 4 : self.auto_mode = j
+        # print(f'arm cmd : {self.arm_cmd} OE : {self.toggle_OE} auto : {self.auto_mode}')
     def arm_direction_control(self, cmd):
         # result = 'no arm move'
         if cmd != -1 :
@@ -66,7 +66,8 @@ class TestMotorControl(Node):
     def json_send(self,json_messages):
         for json_message in json_messages:
         # Send JSON message and receive response
-            response = self.send_json_and_receive_response(json_message)
+            response = self.send_json_and_receive_response(json_message) 
+            # pass
         if response:
             print("Received response:")
             print(json.dumps(response, indent=2))
@@ -93,11 +94,11 @@ class TestMotorControl(Node):
 def main(args=None):
     rclpy.init()
     server = TestMotorControl()
-    print(f'JOY Control server is running...')
+    print(f'arm_control_node is running...')
     try:
         rclpy.spin(server)
     except KeyboardInterrupt:
-        print(f'driver service server terminated!')
+        print(f'arm_control_node is terminated!')
         serial_port.close()
         server.destroy_node()
 
