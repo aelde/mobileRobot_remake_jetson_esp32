@@ -29,7 +29,10 @@ class TestMotorControl(Node):
         self.RL_tick = Int32()
         self.RR_tick = Int32()
         
-        self.timer = self.create_timer(0.1, self.pub_tick_callback)
+        self.pub_rpm_all = self.create_publisher(Float32MultiArray, 'rpm_all', 10)
+        self.rpm_all = Float32MultiArray()
+        
+        self.timer = self.create_timer(0.05, self.pub_tick_callback)
         
         
         self.F_L = 0
@@ -57,10 +60,10 @@ class TestMotorControl(Node):
         self.desiredRPM_RR = 0
 
         #measuredRPM
-        self.measureRPM_FL = 0
-        self.measureRPM_FR = 0
-        self.measureRPM_RL = 0
-        self.measureRPM_RR = 0
+        self.measuredRPM_FL = 0.0
+        self.measuredRPM_FR = 0.0
+        self.measuredRPM_RL = 0.0
+        self.measuredRPM_RR = 0.0
         
         #desiredSPD
         self.desiredSPD_FL = 0
@@ -85,9 +88,10 @@ class TestMotorControl(Node):
         for i, j in enumerate(msg.data):
             if i == 0: 
                 self.spd = j 
-                self.get_logger().info(f'spd : {self.spd}')
+                # self.get_logger().info(f'spd : {self.spd}')
             if i == 1:
-                self.get_logger().info(f'car : {self.car_direction_control(j)}')
+                # self.get_logger().info(f'car : {self.car_direction_control(j)}')
+                self.car_direction_control(j)
 
         r = self.send_json_and_receive_response()
         if r:
@@ -106,6 +110,9 @@ class TestMotorControl(Node):
         
         self.RR_tick.data = self.measureTick_RR
         self.pub_RR_tick.publish(self.RR_tick)
+        
+        self.rpm_all.data = [self.measuredRPM_FL, self.measuredRPM_FR, self.measuredRPM_RL, self.measuredRPM_RR]
+        self.pub_rpm_all.publish(self.rpm_all)
 
     def wheel_cmd_rpm_FL(self, msg):
         self.desiredRPM_FL = msg.data
