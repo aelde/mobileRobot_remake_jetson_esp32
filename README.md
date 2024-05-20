@@ -1,5 +1,5 @@
 ![45336](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/e164a172-1ae1-4b88-b24e-d36f6d663b74)
-<img src="https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/e164a172-1ae1-4b88-b24e-d36f6d663b74" alt="Image Description" width="500">
+<img src="https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/e164a172-1ae1-4b88-b24e-d36f6d663b74" alt="Image Description" width="800">
 
 
 โปรเจคนี้เป็นโปรเจคที่ผมตั้งใจทำขึ้นมาหลังจากที่ผมได้ดูหนังหุ่นยนต์และเห็นบริษัทที่ทำหุ่นยนต์เจ๋งๆ เช่น รีลสตีล,Cyberpunk:Edgerunners,guardians of the galaxy,Boston dinamic, tesla, nasa และอีกหลายๆเรื่องและหลายๆบริษัท ผมจึงอยากสร้างหุ่นยนต์ของตัวเองดูครับ\
