@@ -1,4 +1,3 @@
-![messageImage_1716165281331](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/b9fd05a0-0c62-4493-bfe8-724ac3115193)
 
 <img src="https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/b9fd05a0-0c62-4493-bfe8-724ac3115193" alt="Image Description" width="800">
 
