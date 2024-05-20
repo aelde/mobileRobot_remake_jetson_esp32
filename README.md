@@ -1,4 +1,5 @@
-<img width="950" alt="image" src="https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/ccd75fab-aa5e-4820-a38a-65b22e38941f">
+<img width="![45336](https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/e42b4e77-877f-4238-a94b-7c393ddd043c)
+950" alt="image" src="https://github.com/aelde/mobileRobot_remake_jetson_esp32/assets/79216582/ccd75fab-aa5e-4820-a38a-65b22e38941f">
 
 โปรเจคนี้เป็นโปรเจคที่ผมตั้งใจทำขึ้นมาหลังจากที่ผมได้ดูหนังหุ่นยนต์และเห็นบริษัทที่ทำหุ่นยนต์เจ๋งๆ เช่น รีลสตีล,Cyberpunk:Edgerunners,guardians of the galaxy,Boston dinamic, tesla, nasa และอีกหลายๆเรื่องและหลายๆบริษัท ผมจึงอยากสร้างหุ่นยนต์ของตัวเองดูครับ\
 today im starting with my new robot project (next gen of kalwtummad2). but these code is just a small path of this project (updating the code continuously)\
